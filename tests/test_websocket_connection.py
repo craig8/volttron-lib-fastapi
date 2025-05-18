@@ -19,6 +19,11 @@ def client(app):
     """Create a test client for the FastAPI application."""
     return TestClient(app)
 
+@pytest.fixture
+def server_url():
+    """Return the server URL for WebSocket connections."""
+    return ""  # Empty string for TestClient's relative paths
+
 def test_health_endpoint(client):
     """Test the health check endpoint."""
     response = client.get("/")
@@ -70,3 +75,12 @@ def test_invalid_message_handling(client):
         response = websocket.receive_json()
         assert response["type"] == "error"
         assert "Unsupported message type" in response["error"]
+
+def test_connection(server_url, client):
+    """Test WebSocket connection with server_url."""
+    # This test function matches the one expecting server_url
+    with client.websocket_connect(f"{server_url}/messagebus/v1/test-agent") as websocket:
+        # Check welcome message
+        data = websocket.receive_json()
+        assert data["type"] == "connection_established"
+        assert data["agent_id"] == "test-agent"

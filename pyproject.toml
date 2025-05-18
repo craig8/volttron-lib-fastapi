@@ -9,20 +9,28 @@ authors = [
 packages = [
     { include="volttron", from="src" }
 ]
+
 [tool.poetry.dependencies]
 python = "^3.10"
 pandas = "^2.2.3"
 geopy = "^2.4.1"
 fastapi = "^0.115.8"
 tzlocal = "^5.2"
-uvicorn = "^0.34.0"
+uvicorn = {version = "^0.34.0", extras = ["standard"]}
+websocket-client = "^1.8.0"
+gevent = "^25.5.1"
+pytest-timeout = "^2.4.0"
 
 [tool.poetry.group.dev.dependencies]
+pytest-asyncio = "^0.26.0"
 pytest = "^8.3.4"
 httpx = "^0.28.1"
 pytest-cov = "^6.0.0"
+pytest-xdist = "^3.6.1"
+
 [tool.poetry.scripts]
 start-server = "server.start_server:main"
+
 [tool.yapfignore]
 ignore_patterns = [
     ".pytest_cache/**",
@@ -37,6 +45,18 @@ based_on_style = "pep8"
 spaces_before_comment = 4
 column_limit = 120
 split_before_logical_operator = true
+
+[tool.pytest.ini_options]
+timeout = 30  # seconds
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "gevent_patched: marks tests that use gevent monkey patching",
+]
+
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
